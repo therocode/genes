@@ -98,7 +98,7 @@ SCENARIO("The length of the resulting gene strings, and the amount of genes pars
 
             uint32_t decodedMax9 = geneCodec.decode("CAAAA", 9);
             uint32_t decodedMax9SignificantChanged = geneCodec.decode("CABAA", 9);
-            uint32_t decodedMax9InsignificantChanged = geneCodec.decode("CABBC", 9);
+            uint32_t decodedMax9InsignificantChanged = geneCodec.decode("CAABC", 9);
 
             THEN("the resulting numbers are only different if a significant bit was changed")
             {
