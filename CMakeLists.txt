@@ -30,14 +30,19 @@ project(${project_name})
 #Set source files.
 set(source_files
     src/genecodec.cpp
+    src/chromosome.cpp
     src/cistron.cpp
+    src/randomgene.cpp
 )
 
 set(header_files
     include/dna/assert.hpp
+    include/dna/chromosome.hpp
     include/dna/cistron.hpp
     include/dna/gene.hpp
     include/dna/genecodec.hpp
+    include/dna/genetable.hpp
+    include/dna/randomgene.hpp
 )
 
 include_directories(include)
