@@ -12,5 +12,9 @@ namespace dna
             void encode(uint32_t value, uint32_t maxValue, Gene& targetGene);
             uint32_t decode(const Gene& gene, uint32_t maxValue);
             uint32_t decode(const Gene& gene, uint32_t maxValue, uint32_t offset, uint32_t& decodeEnd);
+        private:
+            std::string convertToBase(uint32_t integer, uint32_t maxValue, uint32_t base);
+            uint32_t digitsSize(uint32_t n, uint32_t base);
+            uint32_t mInformationDensity;
     };
 }

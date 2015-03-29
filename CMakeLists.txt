@@ -32,6 +32,7 @@ set(source_files
 )
 
 set(header_files
+    include/dna/assert.hpp
     include/dna/gene.hpp
     include/dna/genecodec.hpp
 )
