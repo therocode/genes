@@ -3,16 +3,16 @@
 #include <dna/genecodec.hpp>
 #include <dna/assert.hpp>
 
-const std::string charTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const std::string charTable = "ATCGEFDHIJKLMNOPQRSBUVWXYZ";
 const std::unordered_map<char, uint32_t> numberTable = 
 {
     {'A', 0},
-    {'B', 1},
+    {'T', 1},
     {'C', 2},
-    {'D', 3},
+    {'G', 3},
     {'E', 4},
     {'F', 5},
-    {'G', 6},
+    {'D', 6},
     {'H', 7},
     {'I', 8},
     {'J', 9},
@@ -25,7 +25,7 @@ const std::unordered_map<char, uint32_t> numberTable =
     {'Q', 16},
     {'R', 17},
     {'S', 18},
-    {'T', 19},
+    {'B', 19},
     {'U', 20},
     {'V', 21},
     {'W', 22},
@@ -39,6 +39,7 @@ namespace dna
     GeneCodec::GeneCodec(uint32_t informationDensity):
         mInformationDensity(informationDensity)
     {
+        DNA_ASSERT(informationDensity > 1, "information density must be bigger than 1");
     }
 
     Gene GeneCodec::encode(uint32_t value, uint32_t maxValue)
@@ -67,8 +68,9 @@ namespace dna
     void GeneCodec::convertToBase(uint32_t integer, uint32_t maxValue, uint32_t base, std::string& outString)
     {
         DNA_ASSERT(integer <= maxValue, "cannot pass bigger integer than maxValue");
-        DNA_ASSERT(base < charTable.size(), "base cannot be bigger than" + std::to_string(charTable.size()));
+        DNA_ASSERT(base <= charTable.size(), "base cannot be bigger than " + std::to_string(charTable.size()));
         DNA_ASSERT(base > 0, "base cannot be zero");
+        DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
 
         uint32_t digitAmount = digitsSize(maxValue, base);
         std::string result;
@@ -93,21 +95,22 @@ namespace dna
 
     uint32_t GeneCodec::convertToNumber(const std::string& sequence, uint32_t maxValue, uint32_t offset, uint32_t base, uint32_t& newOffset)
     {
-        DNA_ASSERT(sequence.size() > 0, "cannot convert null sequence");
-        DNA_ASSERT(base < charTable.size(), "base cannot be bigger than" + std::to_string(charTable.size()));
+        DNA_ASSERT(base <= charTable.size(), "base cannot be bigger than " + std::to_string(charTable.size()));
         DNA_ASSERT(base > 0, "base cannot be zero");
-
+        DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
+        
         uint32_t maxDigitsToProcess = digitsSize(maxValue, base);
         uint32_t currentDigit = 0;
         uint32_t value = 0;
         uint32_t multiplier = 1;
 
         std::string subSequence = sequence.substr(offset, maxDigitsToProcess);
-        newOffset = offset + maxDigitsToProcess;
+        newOffset = offset + std::min((size_t)maxDigitsToProcess, subSequence.size());
 
         while(currentDigit < maxDigitsToProcess && currentDigit < subSequence.size())
         {
             uint32_t currentDigitValue = numberTable.at(subSequence[currentDigit]);
+            DNA_ASSERT(currentDigitValue < base, "given gene " + sequence + " does not contain only base " + std::to_string(base) + " numbers");
             value += currentDigitValue * multiplier;
             multiplier *= base;
             ++currentDigit;

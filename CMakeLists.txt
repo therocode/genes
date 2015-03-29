@@ -10,6 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake/modu
 set(SHARED_BUILD TRUE CACHE BOOL "Set this to false if you want a static build")
 
 set(BUILD_TESTS TRUE CACHE BOOL "build the tests")
+set(BUILD_EXAMPLES TRUE CACHE BOOL "build the examples")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)  #for shared libs 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)  #for static libs 
@@ -29,10 +30,12 @@ project(${project_name})
 #Set source files.
 set(source_files
     src/genecodec.cpp
+    src/cistron.cpp
 )
 
 set(header_files
     include/dna/assert.hpp
+    include/dna/cistron.hpp
     include/dna/gene.hpp
     include/dna/genecodec.hpp
 )
@@ -55,10 +58,31 @@ if(BUILD_TESTS)
     include_directories(test)
     add_executable(tests "test/main.cpp"
         "test/genecodectest.cpp"
+        "test/cistrontest.cpp"
+        "test/chromosometest.cpp"
         )
 
     target_link_libraries(tests ${project_name})
 endif(BUILD_TESTS)
+
+#examples
+if(BUILD_EXAMPLES)
+    #find_package(OpenGL REQUIRED)
+    #if(${OPENGL_FOUND})
+    #    include_directories(${OPENGL_INCLUDE_DIRS})
+    #endif()
+    #find_package(SDL2 REQUIRED)
+    #if(SDL2_FOUND)
+    #    include_directories(${SDL2_INCLUDE_DIR})
+    #endif()
+
+    set(blah_src "examples/blah/src")
+    add_executable(blah
+        ${blah_src}/main.cpp
+        )
+
+    target_link_libraries(blah ${project_name})
+endif()
 
 #installation
 if(WIN32)

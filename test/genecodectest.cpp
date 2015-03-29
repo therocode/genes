@@ -15,17 +15,17 @@ SCENARIO("A GeneCodec can be used to encode and decode integers <-> genes of dif
 
             THEN("the right gene string is produced")
             {
-                CHECK(encoded3  == "BBAAAA");
-                CHECK(encoded8  == "AAABAA");
-                CHECK(encoded21 == "BABABA");
+                CHECK(encoded3  == "TTAAAA");
+                CHECK(encoded8  == "AAATAA");
+                CHECK(encoded21 == "TATATA");
             }
         }
 
         WHEN("genes are decoded")
         {
-            uint32_t decoded3 = geneCodec.decode("BB", 32);
-            uint32_t decoded8 = geneCodec.decode("AAAB", 32);
-            uint32_t decoded21 = geneCodec.decode("BABAB", 32);
+            uint32_t decoded3 = geneCodec.decode("TT", 32);
+            uint32_t decoded8 = geneCodec.decode("AAAT", 32);
+            uint32_t decoded21 = geneCodec.decode("TATAT", 32);
 
             THEN("the right numbers are extracted")
             {
@@ -48,17 +48,17 @@ SCENARIO("A GeneCodec can be used to encode and decode integers <-> genes of dif
 
             THEN("the right gene string is produced")
             {
-                CHECK(encoded3  == "ABAA");
+                CHECK(encoded3  == "ATAA");
                 CHECK(encoded8  == "CCAA");
-                CHECK(encoded16 == "BCBA");
+                CHECK(encoded16 == "TCTA");
             }
         }
 
         WHEN("genes are decoded")
         {
-            uint32_t decoded3 = geneCodec.decode("AB", 32);
+            uint32_t decoded3 = geneCodec.decode("AT", 32);
             uint32_t decoded8 = geneCodec.decode("CC", 32);
-            uint32_t decoded16 = geneCodec.decode("BCB", 32);
+            uint32_t decoded16 = geneCodec.decode("TCT", 32);
 
             THEN("the right numbers are extracted")
             {
@@ -93,12 +93,12 @@ SCENARIO("The length of the resulting gene strings, and the amount of genes pars
         WHEN("values with different max values are decoded, with different amounts of extra bits")
         {
             uint32_t decodedMax5 = geneCodec.decode("CAAAA", 5);
-            uint32_t decodedMax5SignificantChanged = geneCodec.decode("CBAAA", 5);
-            uint32_t decodedMax5InsignificantChanged = geneCodec.decode("CABCC", 5);
+            uint32_t decodedMax5SignificantChanged = geneCodec.decode("CTAAA", 5);
+            uint32_t decodedMax5InsignificantChanged = geneCodec.decode("CATCC", 5);
 
             uint32_t decodedMax9 = geneCodec.decode("CAAAA", 9);
-            uint32_t decodedMax9SignificantChanged = geneCodec.decode("CABAA", 9);
-            uint32_t decodedMax9InsignificantChanged = geneCodec.decode("CAABC", 9);
+            uint32_t decodedMax9SignificantChanged = geneCodec.decode("CATAA", 9);
+            uint32_t decodedMax9InsignificantChanged = geneCodec.decode("CAATC", 9);
 
             THEN("the resulting numbers are only different if a significant bit was changed")
             {
@@ -126,13 +126,13 @@ SCENARIO("Genes can be encoded into/decoded from longer gene sequences", "[genes
 
             THEN("the gene sequence contains all three values encoded next to each other")
             {
-                CHECK(gene == "ABABBBBBB");
+                CHECK(gene == "ATATTTTTT");
             }
         }
 
         WHEN("3 values are decoded from the same gene using offset access")
         {
-            dna::Gene gene = "ABABBBBBB";
+            dna::Gene gene = "ATATTTTTT";
             uint32_t offset = 0;
             uint32_t decoded10 = geneCodec.decode(gene, 15, offset, offset);
             uint32_t decoded1 = geneCodec.decode(gene, 1, offset, offset);
@@ -143,6 +143,45 @@ SCENARIO("Genes can be encoded into/decoded from longer gene sequences", "[genes
                 CHECK(decoded10 == 10);
                 CHECK(decoded1 == 1);
                 CHECK(decoded15 == 15);
+            }
+        }
+    }
+}
+
+SCENARIO("decoding too short strings gives numerical values", "[genes]")
+{
+    GIVEN("A GeneCodec")
+    {
+        dna::GeneCodec geneCodec(2);
+
+        WHEN("values are extracted from a too short gene")
+        {
+            uint32_t value1 = geneCodec.decode("ATA", 255);
+            uint32_t value2 = geneCodec.decode("", 255);
+
+            THEN("the values are values")
+            {
+                CHECK((value1 < 0 || value1 >= 0));
+                CHECK((value2 < 0 || value2 >= 0));
+            }
+        }
+
+        WHEN("continuous values are extracted from a too short gene")
+        {
+            dna::Gene gene = "ATAAT";
+
+            uint32_t offset = 0;
+            uint32_t value1 = geneCodec.decode(gene, 255, offset, offset);
+            uint32_t value2 = geneCodec.decode(gene, 255, offset, offset);
+            uint32_t value3 = geneCodec.decode(gene, 255, offset, offset);
+            uint32_t value4 = geneCodec.decode(gene, 255, offset, offset);
+
+            THEN("the values are values")
+            {
+                CHECK((value1 < 0 || value1 >= 0));
+                CHECK((value2 < 0 || value2 >= 0));
+                CHECK((value3 < 0 || value3 >= 0));
+                CHECK((value4 < 0 || value4 >= 0));
             }
         }
     }
