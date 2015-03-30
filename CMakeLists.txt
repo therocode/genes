@@ -29,6 +29,7 @@ project(${project_name})
 
 #Set source files.
 set(source_files
+    src/breeder.cpp
     src/genecodec.cpp
     src/chromosome.cpp
     src/cistron.cpp
@@ -37,6 +38,7 @@ set(source_files
 
 set(header_files
     include/dna/assert.hpp
+    include/dna/breeder.hpp
     include/dna/chromosome.hpp
     include/dna/cistron.hpp
     include/dna/gene.hpp
