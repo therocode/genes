@@ -74,6 +74,10 @@ endif(BUILD_TESTS)
 
 #examples
 if(BUILD_EXAMPLES)
+    find_package(Featherkit COMPONENTS ui rendering sdl2 structure REQUIRED)
+    if(${FEATHERKIT_FOUND})
+        include_directories(${FEATHERKIT_INCLUDE_DIRS})
+    endif()
     #find_package(OpenGL REQUIRED)
     #if(${OPENGL_FOUND})
     #    include_directories(${OPENGL_INCLUDE_DIRS})
@@ -83,12 +87,15 @@ if(BUILD_EXAMPLES)
     #    include_directories(${SDL2_INCLUDE_DIR})
     #endif()
 
-    set(blah_src "examples/blah/src")
-    add_executable(blah
-        ${blah_src}/main.cpp
+    set(cells_src "examples/cells/src")
+    add_executable(cells
+        ${cells_src}/main.cpp
+        ${cells_src}/cells.cpp
+        ${cells_src}/cell.cpp
+        ${cells_src}/lodepng.cpp
         )
 
-    target_link_libraries(blah ${project_name})
+    target_link_libraries(cells ${project_name} ${FEATHERKIT_LIBRARIES})
 endif()
 
 #installation
