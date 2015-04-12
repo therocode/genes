@@ -95,18 +95,24 @@ void Cells::setupGraphics()
 
 void Cells::setupCells()
 {
-    mCells = { 
-        {128, {100.0f, 100.0f}},
-        {128, {500.0f, 500.0f}},
-        {64, {600.0f, 550.0f}},
-        {32, {400.0f, 350.0f}}
-    };
+    std::random_device rd;
+    std::uniform_int_distribution<> randomSize(16, 128);
+    std::uniform_int_distribution<> randomX(65, 1200);
+    std::uniform_int_distribution<> randomY(65, 700);
+    std::uniform_int_distribution<> randomImpulse(-3000, 3000);
+    mCells.clear();
+
+    for(int32_t i = 0; i < 100; i++)
+    {
+        mCells.push_back({(uint32_t)randomSize(rd), glm::vec2(randomX(rd), randomY(rd))});
+    }
 
     for(auto& cell : mCells)
+    {
         cell.setSpin(2.0f/((rand() % 2000) - 1000.0f));
-
-    for(auto& cell : mCells)
+        cell.applyImpulse(glm::vec2(randomImpulse(rd), randomImpulse(rd)));
         cell.setupTextures(mTextures);
+    }
 }
 
 void Cells::update()

@@ -1,18 +1,19 @@
 #include "cell.hpp"
+#include "pi.hpp"
 #include <random>
 
 Cell::Cell(uint32_t size, const glm::vec2& position):
     mRotation(0.0f),
     mSpin(0.0f),
+    mMass((size/2.0f) * (size/2.0f) * pi()),
+    mSize(size),
     mBallQuad({(float)size, (float)size}),
     mPatternQuad({(float)size, (float)size}),
     mShadowQuad({(float)size, (float)size}),
     mFieldQuad({size * 1.25f, size * 1.25})
 {
-    mBallQuad.setPosition(position);
-    mPatternQuad.setPosition(position);
-    mShadowQuad.setPosition(position);
-    mFieldQuad.setPosition(position);
+
+    setPosition(position);
 
     mBallQuad.setOrigin(mBallQuad.getSize() / 2.0f);
     mPatternQuad.setOrigin(mPatternQuad.getSize() / 2.0f);
@@ -65,12 +66,53 @@ void Cell::rotate(float angle)
     setRotation(mRotation + angle);
 }
 
+void Cell::setPosition(const glm::vec2& position)
+{
+    mPosition = position;
+    
+    mFieldQuad.setPosition(position);
+    mBallQuad.setPosition(position);
+    mPatternQuad.setPosition(position);
+    mShadowQuad.setPosition(position);
+}
+
+void Cell::translate(const glm::vec2& amount)
+{
+    setPosition(mPosition + amount);
+}
+
 void Cell::setSpin(float angle)
 {
     mSpin = angle;
 }
 
+void Cell::applyImpulse(const glm::vec2& force)
+{
+    glm::vec2 velocity = force / mMass;
+    mVelocity += velocity;
+}
+
 void Cell::update()
 {
     rotate(mSpin);
+    translate(mVelocity);
+
+    float radius = mSize / 2.0f;
+
+    if(mPosition.x - radius < 0.0f ||
+       mPosition.x + radius > 1280.0f)
+    {
+        glm::vec2 reflector;
+        reflector.x = mVelocity.x * 2.0f * mMass;
+
+        applyImpulse(-reflector);
+    }
+    if(mPosition.y - radius < 0.0f ||
+       mPosition.y + radius > 768.0f)
+    {
+        glm::vec2 reflector;
+        reflector.y = mVelocity.y * 2.0f * mMass;
+
+        applyImpulse(-reflector);
+    }
 }
