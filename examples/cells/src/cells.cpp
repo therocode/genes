@@ -1,5 +1,6 @@
 #include "cells.hpp"
 #include "texturemaker.hpp"
+#include <random>
 
 Cells::Cells():
      mInputHandler(new fea::SDL2InputBackend()),
