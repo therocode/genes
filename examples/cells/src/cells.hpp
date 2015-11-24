@@ -13,7 +13,6 @@ class Cells : public fea::Application
         Cells();
     protected:
         virtual void setup(const std::vector<std::string>& args) override;
-        virtual void destroy() override; 
         virtual void loop() override;
     private:
         void handleInput();
@@ -23,8 +22,8 @@ class Cells : public fea::Application
         void setupCells();
         void update();
         fea::InputHandler mInputHandler;
-        fea::Renderer2D mRenderer;
         fea::Window mWindow;
+        fea::Renderer2D mRenderer;
 
         TextureMap mTextures;
         std::vector<Cell> mCells;

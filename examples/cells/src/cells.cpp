@@ -4,28 +4,20 @@
 
 Cells::Cells():
      mInputHandler(new fea::SDL2InputBackend()),
-     mRenderer(fea::Viewport({1280, 768}, {0, 0}, fea::Camera({1280.0f / 2.0f, 768.0f / 2.0f}))),
-     mWindow(new fea::SDL2WindowBackend())
+     mWindow(new fea::SDL2WindowBackend(), fea::VideoMode(1280, 768), "Cells"),
+     mRenderer(fea::Viewport({1280, 768}, {0, 0}, fea::Camera({1280.0f / 2.0f, 768.0f / 2.0f})))
 {
 }
 
 void Cells::setup(const std::vector<std::string>& args)
 {
-    mWindow.create(fea::VideoMode(1280, 768), "Cells");
     mWindow.setFramerateLimit(60);
     mInputHandler.setKeyRepeatEnabled(false);
-
-    mRenderer.setup();
 
     //setupAudio();
     setupGraphics();
 
     setupCells();
-}
-
-void Cells::destroy()
-{
-    mWindow.close();
 }
 
 void Cells::loop()
