@@ -33,7 +33,7 @@ SCENARIO("RandomGeneGenerator can produce genes with randomized content", "[dna]
 
         WHEN("A random gene of a certain length is requested")
         {
-            size_t geneLength = 1'000'000;
+            size_t geneLength = 100000;
 
             dna::Gene randomGene = generator.generate(geneLength);
 
