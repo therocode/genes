@@ -1,5 +1,5 @@
 #cmake ver req
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
 if(NOT CMAKE_BUILD_TYPE )
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Select if you want to build Debug or Release" FORCE )
@@ -25,39 +25,35 @@ else(SHARED_BUILD)
 endif(SHARED_BUILD)
 
 set(project_name genes)
-project(${project_name})
+project(${project_name} CXX)
 
 #Set source files.
 set(source_files
-    src/breeder.cpp
+    #src/breeder.cpp
     src/genecodec.cpp
-    src/chromosome.cpp
-    src/cistron.cpp
-    src/randomgene.cpp
+    #src/chromosome.cpp
+    #src/cistron.cpp
+    #src/randomgene.cpp
 )
 
 set(header_files
     include/dna/assert.hpp
-    include/dna/breeder.hpp
-    include/dna/chromosome.hpp
-    include/dna/cistron.hpp
+    #include/dna/breeder.hpp
+    #include/dna/chromosome.hpp
+    #include/dna/cistron.hpp
     include/dna/gene.hpp
     include/dna/genecodec.hpp
-    include/dna/genetable.hpp
-    include/dna/randomgene.hpp
+    include/dna/randomgenegenerator.hpp
+    #include/dna/genetable.hpp
+    #include/dna/randomgene.hpp
 )
 
 include_directories(include)
 
-#C++11 required
-if(NOT MSVC)
-    set(CPP_11_FLAG -std=c++11)
-endif()
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPP_11_FLAG}")
-
 #build
 add_library(${project_name} ${SHARED_OR_STATIC} ${header_files} ${source_files})
+set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 14)
+set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
 target_link_libraries(${project_name})
     
 #tests
@@ -65,38 +61,34 @@ if(BUILD_TESTS)
     include_directories(test)
     add_executable(tests "test/main.cpp"
         "test/genecodectest.cpp"
-        "test/cistrontest.cpp"
-        "test/chromosometest.cpp"
+        "test/randomgenegeneratortest.cpp"
+        #"test/cistrontest.cpp"
+        #"test/chromosometest.cpp"
         )
+
+    set_property(TARGET tests PROPERTY CXX_STANDARD 14)
+    set_property(TARGET tests PROPERTY CXX_STANDARD_REQUIRED ON)
 
     target_link_libraries(tests ${project_name})
 endif(BUILD_TESTS)
 
 #examples
-if(BUILD_EXAMPLES)
-    find_package(Featherkit COMPONENTS ui rendering sdl2 structure REQUIRED)
-    if(${FEATHERKIT_FOUND})
-        include_directories(${FEATHERKIT_INCLUDE_DIRS})
-    endif()
-    #find_package(OpenGL REQUIRED)
-    #if(${OPENGL_FOUND})
-    #    include_directories(${OPENGL_INCLUDE_DIRS})
-    #endif()
-    #find_package(SDL2 REQUIRED)
-    #if(SDL2_FOUND)
-    #    include_directories(${SDL2_INCLUDE_DIR})
-    #endif()
-
-    set(cells_src "examples/cells/src")
-    add_executable(cells
-        ${cells_src}/main.cpp
-        ${cells_src}/cells.cpp
-        ${cells_src}/cell.cpp
-        ${cells_src}/lodepng.cpp
-        )
-
-    target_link_libraries(cells ${project_name} ${FEATHERKIT_LIBRARIES})
-endif()
+#if(BUILD_EXAMPLES)
+#    find_package(Featherkit COMPONENTS ui rendering sdl2 structure REQUIRED)
+#    if(${FEATHERKIT_FOUND})
+#        include_directories(${FEATHERKIT_INCLUDE_DIRS})
+#    endif()
+#
+#    set(cells_src "examples/cells/src")
+#    add_executable(cells
+#        ${cells_src}/main.cpp
+#        ${cells_src}/cells.cpp
+#        ${cells_src}/cell.cpp
+#        ${cells_src}/lodepng.cpp
+#        )
+#
+#    target_link_libraries(cells ${project_name} ${FEATHERKIT_LIBRARIES})
+#endif()
 
 #installation
 if(WIN32)
