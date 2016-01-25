@@ -50,11 +50,15 @@ namespace dna
             for(int32_t i = rewriteStart; i < rewriteStart + illegalStartAndSize.second; ++i)
             {
                 result[i] = mAvailableNucleotides[range(mRandomNumberEngine)];
-                std::cout << "x";
+                std::cout << i << " ";
             }
 
             std::cout << "\n";
             safePos = std::max(int64_t(0), static_cast<int64_t>(rewriteStart) - mBiggestIllegalSize);
+
+            std::cout << "rewrote from " << rewriteStart << " and rewrote " <<  illegalStartAndSize.second << "\n";
+            std::cout << containsIllegal(result, safePos, illegalStartAndSize) << " " << illegalStartAndSize.first << " is safepos\n";
+            std::cout << containsIllegal(result, 0, illegalStartAndSize) << " " << illegalStartAndSize.first << " is 0\n\n";
         }
 
         return result;
