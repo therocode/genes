@@ -5,7 +5,8 @@ SCENARIO("RandomGeneGenerator can produce genes with randomized content", "[dna]
 {
     GIVEN("A RandomGeneGenerator with a certain sets of chars and with no illegal sequences given")
     {
-        std::unordered_set<dna::Nucleotide> availableNucleotides{'A', 'C', 'G', 'T'};
+        std::vector<dna::Nucleotide> availableNucleotides{'A', 'C', 'G', 'T'};
+        std::unordered_set<dna::Nucleotide> availableNucleotidesSet(availableNucleotides.begin(), availableNucleotides.end());
 
         dna::RandomGeneGenerator<> generator(availableNucleotides, {}, 0);
 
@@ -19,14 +20,15 @@ SCENARIO("RandomGeneGenerator can produce genes with randomized content", "[dna]
             {
                 CHECK(randomGene.size() == geneLength);
                 for(dna::Nucleotide nucleotide : randomGene)
-                    CHECK(availableNucleotides.find(nucleotide) != availableNucleotides.end());
+                    CHECK(availableNucleotidesSet.find(nucleotide) != availableNucleotidesSet.end());
             }
         }
     }
 
     GIVEN("A RandomGeneGenerator with a certain sets of chars and with some illegal sequences given")
     {
-        std::unordered_set<dna::Nucleotide> availableNucleotides{'A', 'C', 'G', 'T'};
+        std::vector<dna::Nucleotide> availableNucleotides{'A', 'C', 'G', 'T'};
+        std::unordered_set<dna::Nucleotide> availableNucleotidesSet(availableNucleotides.begin(), availableNucleotides.end());
         std::unordered_set<dna::Gene> illegalSequences{"GATCA", "CATA", "TATA", "GATTACA"};
 
         dna::RandomGeneGenerator<> generator(availableNucleotides, illegalSequences, 0);
@@ -42,7 +44,7 @@ SCENARIO("RandomGeneGenerator can produce genes with randomized content", "[dna]
                 CHECK(randomGene.size() == geneLength);
 
                 for(dna::Nucleotide nucleotide : randomGene)
-                    CHECK(availableNucleotides.find(nucleotide) != availableNucleotides.end());
+                    CHECK(availableNucleotidesSet.count(nucleotide) != 0);
 
                 for(dna::Gene illegalSequence : illegalSequences)
                 {

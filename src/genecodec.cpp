@@ -1,97 +1,91 @@
 #include <cmath>
 #include <unordered_map>
 #include <dna/genecodec.hpp>
-#include <dna/assert.hpp>
 #include <dna/genetable.hpp>
 
 namespace dna
 {
-    GeneCodec::GeneCodec(uint32_t informationDensity):
-        mInformationDensity(informationDensity)
-    {
-        DNA_ASSERT(informationDensity > 1, "information density must be bigger than 1");
-    }
 
-    Gene GeneCodec::encode(uint32_t value, uint32_t maxValue)
-    {
-        std::string result;
-        convertToBase(value, maxValue, mInformationDensity, result);
-        return result;
-    }
+    //GeneCodec::GeneCodec(uint32_t informationDensity):
+    //    mInformationDensity(informationDensity)
+    //{
+    //    DNA_ASSERT(informationDensity > 1, "information density must be bigger than 1");
+    //}
 
-    void GeneCodec::encode(uint32_t value, uint32_t maxValue, Gene& targetGene)
-    {
-        convertToBase(value, maxValue, mInformationDensity, targetGene);
-    }
+    //Gene GeneCodec::encode(uint32_t value, uint32_t maxValue)
+    //{
+    //    std::string result;
+    //    convertToBase(value, maxValue, mInformationDensity, result);
+    //    return result;
+    //}
 
-    uint32_t GeneCodec::decode(const Gene& gene, uint32_t maxValue)
-    {
-        uint32_t dummy;
-        return convertToNumber(gene, maxValue, 0, mInformationDensity, dummy);
-    }
+    //void GeneCodec::encode(uint32_t value, uint32_t maxValue, Gene& targetGene)
+    //{
+    //    convertToBase(value, maxValue, mInformationDensity, targetGene);
+    //}
 
-    uint32_t GeneCodec::decode(const Gene& gene, uint32_t maxValue, uint32_t offset, uint32_t& decodeEnd)
-    {
-        return convertToNumber(gene, maxValue, offset, mInformationDensity, decodeEnd);
-    }
+    //uint32_t GeneCodec::decode(const Gene& gene, uint32_t maxValue)
+    //{
+    //    uint32_t dummy;
+    //    return convertToNumber(gene, maxValue, 0, mInformationDensity, dummy);
+    //}
 
-    void GeneCodec::convertToBase(uint32_t integer, uint32_t maxValue, uint32_t base, std::string& outString)
-    {
-        DNA_ASSERT(integer <= maxValue, "cannot pass bigger integer than maxValue");
-        DNA_ASSERT(base <= charTable.size(), "base cannot be bigger than " + std::to_string(charTable.size()));
-        DNA_ASSERT(base > 0, "base cannot be zero");
-        DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
+    //uint32_t GeneCodec::decode(const Gene& gene, uint32_t maxValue, uint32_t offset, uint32_t& decodeEnd)
+    //{
+    //    return convertToNumber(gene, maxValue, offset, mInformationDensity, decodeEnd);
+    //}
 
-        uint32_t digitAmount = digitsSize(maxValue, base);
-        std::string result;
-        result.resize(digitAmount, charTable[0]);
-        int32_t writeIndex = 0;
+    //void GeneCodec::convertToBase(uint32_t integer, uint32_t maxValue, uint32_t base, std::string& outString)
+    //{
+    //    DNA_ASSERT(integer <= maxValue, "cannot pass bigger integer than maxValue");
+    //    DNA_ASSERT(base <= charTable.size(), "base cannot be bigger than " + std::to_string(charTable.size()));
+    //    DNA_ASSERT(base > 0, "base cannot be zero");
+    //    DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
 
-        int32_t left = integer;
-        while(left)
-        {
-            int32_t thisLeft = left;
+    //    uint32_t digitAmount = digitsSize(maxValue, base);
+    //    std::string result;
+    //    result.resize(digitAmount, charTable[0]);
+    //    int32_t writeIndex = 0;
 
-            left = thisLeft / base;
-            int32_t thisValue = thisLeft % base; //smart compilers just get the remainder STD DIV!!!!!!!!!!!!!!!!!!!!
+    //    int32_t left = integer;
+    //    while(left)
+    //    {
+    //        int32_t thisLeft = left;
 
-            result[writeIndex] = charTable[thisValue];
+    //        left = thisLeft / base;
+    //        int32_t thisValue = thisLeft % base; //smart compilers just get the remainder STD DIV!!!!!!!!!!!!!!!!!!!!
 
-            ++writeIndex;
-        }
+    //        result[writeIndex] = charTable[thisValue];
 
-        outString.append(result);
-    }
+    //        ++writeIndex;
+    //    }
 
-    uint32_t GeneCodec::convertToNumber(const std::string& sequence, uint32_t maxValue, uint32_t offset, uint32_t base, uint32_t& newOffset)
-    {
-        DNA_ASSERT(base <= charTable.size(), "base cannot be bigger than " + std::to_string(charTable.size()));
-        DNA_ASSERT(base > 0, "base cannot be zero");
-        DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
-        
-        uint32_t maxDigitsToProcess = digitsSize(maxValue, base);
-        uint32_t currentDigit = 0;
-        uint32_t value = 0;
-        uint32_t multiplier = 1;
+    //    outString.append(result);
+    //}
 
-        std::string subSequence = sequence.substr(offset, maxDigitsToProcess);
-        newOffset = offset + std::min((size_t)maxDigitsToProcess, subSequence.size());
+    //uint32_t GeneCodec::convertToNumber(const std::string& sequence, uint32_t maxValue, uint32_t offset, uint32_t base, uint32_t& newOffset)
+    //{
+    //    DNA_ASSERT(base <= charTable.size(), "base cannot be bigger than " + std::to_string(charTable.size()));
+    //    DNA_ASSERT(base > 0, "base cannot be zero");
+    //    DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
+    //    
+    //    uint32_t maxDigitsToProcess = digitsSize(maxValue, base);
+    //    uint32_t currentDigit = 0;
+    //    uint32_t value = 0;
+    //    uint32_t multiplier = 1;
 
-        while(currentDigit < maxDigitsToProcess && currentDigit < subSequence.size())
-        {
-            uint32_t currentDigitValue = numberTable.at(subSequence[currentDigit]);
-            DNA_ASSERT(currentDigitValue < base, "given gene " + sequence + " does not contain only base " + std::to_string(base) + " numbers");
-            value += currentDigitValue * multiplier;
-            multiplier *= base;
-            ++currentDigit;
-        }
+    //    std::string subSequence = sequence.substr(offset, maxDigitsToProcess);
+    //    newOffset = offset + std::min((size_t)maxDigitsToProcess, subSequence.size());
 
-        return value;
-    }
+    //    while(currentDigit < maxDigitsToProcess && currentDigit < subSequence.size())
+    //    {
+    //        uint32_t currentDigitValue = numberTable.at(subSequence[currentDigit]);
+    //        DNA_ASSERT(currentDigitValue < base, "given gene " + sequence + " does not contain only base " + std::to_string(base) + " numbers");
+    //        value += currentDigitValue * multiplier;
+    //        multiplier *= base;
+    //        ++currentDigit;
+    //    }
 
-    uint32_t GeneCodec::digitsSize(uint32_t n, uint32_t base)
-    {
-        int s = int(std::log10(1.0*n)/std::log10(1.0*base)) + 1;
-        return std::pow(base, s) > n ? s : s+1;
-    }
+    //    return value;
+    //}
 }

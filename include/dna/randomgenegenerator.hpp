@@ -1,6 +1,7 @@
 #pragma once
 #include <dna/gene.hpp>
 #include <unordered_set>
+#include <vector>
 #include <random>
 #include <iostream>
 #include <algorithm>
@@ -11,7 +12,7 @@ namespace dna
         class RandomGeneGenerator
         {
             public:
-                RandomGeneGenerator(std::unordered_set<Nucleotide> avaliableNucleotides, std::unordered_set<Gene> illegalSequences = {}, int32_t seed = std::random_device()());
+                RandomGeneGenerator(std::vector<Nucleotide> avaliableNucleotides, std::unordered_set<Gene> illegalSequences = {}, int32_t seed = std::random_device()());
                 Gene generate(int32_t length) const;
             private:
                 size_t findFirstIllegal(const Gene& gene, size_t startSearch) const;
@@ -23,8 +24,8 @@ namespace dna
         };
 
     template <typename RandomNumberEngine>
-        RandomGeneGenerator<RandomNumberEngine>::RandomGeneGenerator(std::unordered_set<Nucleotide> avaliableNucleotides, std::unordered_set<Gene> illegalSequences, int32_t seed):
-            mAvailableNucleotides(avaliableNucleotides.begin(), avaliableNucleotides.end()),
+        RandomGeneGenerator<RandomNumberEngine>::RandomGeneGenerator(std::vector<Nucleotide> avaliableNucleotides, std::unordered_set<Gene> illegalSequences, int32_t seed):
+            mAvailableNucleotides(std::move(avaliableNucleotides)),
             mIllegalSequences(illegalSequences.begin(), illegalSequences.end()),
             mRandomNumberEngine(seed),
             mBiggestIllegalSize(0)
