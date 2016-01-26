@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <dna/gene.hpp>
 #include <unordered_set>
+#include <unordered_map>
 #include <bitset>
 #include <vector>
 #include <dna/information.hpp>
@@ -18,14 +19,18 @@ namespace dna
     {
         public:
             GeneCodec(const std::vector<char>& availableNucleotides, const Gene& segmentStartCode, const Gene& segmentEndCode, int32_t minSpread, int32_t maxSpread, int32_t seed = std::random_device()());
-            template<typename InformationContainer>
-            Gene encode(InformationContainer&& informationContainer) const;
-            template<typename InformationContainer>
-            void encode(InformationContainer&& informationContainer, Gene& output) const;
+            Gene encode(const std::vector<Information>& informationContainer) const;
+            void encode(const std::vector<Information>& informationContainer, Gene& output) const;
+            std::vector<Information> decode(const Gene& toDecode) const;
         private:
             Gene toGene(uint32_t data, uint32_t maxValue) const;
-            int32_t digitsAmount(uint32_t n, int32_t base) const;
+            uint32_t fromGene(const Gene& gene, uint32_t maxValue) const;
+            int32_t digitsAmount(uint32_t n) const;
+            int32_t digitsAmount(uint32_t n, uint32_t base) const;
+            bool dataExistsAfter(const Gene& gene, int32_t startPos, int32_t& nextPosition) const;
+            uint32_t intPow(uint32_t base, uint32_t exp) const;
             std::vector<char> mAvailableNucleotides;
+            std::unordered_map<char, int32_t> mNucleotideIndices;
             mutable RandomNumberEngine mRandomNumberEngine;
             Gene mSegmentStartCode;
             Gene mSegmentEndCode;
@@ -44,20 +49,25 @@ namespace dna
         mMaxSpread(maxSpread),
         mZeroNucleotide(mAvailableNucleotides.front())
     {
+        int32_t i = 0;
+
+        for(char nucleotide : mAvailableNucleotides)
+        {
+            mNucleotideIndices.emplace(nucleotide, i);
+            ++i;
+        }
     }
 
     template <typename RandomNumberEngine>
-    template<typename InformationContainer>
-    Gene GeneCodec<RandomNumberEngine>::encode(InformationContainer&& informationContainer) const
+    Gene GeneCodec<RandomNumberEngine>::encode(const std::vector<Information>& informationContainer) const
     {
         Gene result;
-        encode(std::forward<InformationContainer>(informationContainer), result);
+        encode(informationContainer, result);
         return std::move(result);
     }
 
     template <typename RandomNumberEngine>
-    template<typename InformationContainer>
-    void GeneCodec<RandomNumberEngine>::encode(InformationContainer&& informationContainer, Gene& output) const
+    void GeneCodec<RandomNumberEngine>::encode(const std::vector<Information>& informationContainer, Gene& output) const
     {
         if(informationContainer.empty())
             return;
@@ -108,7 +118,7 @@ namespace dna
             int32_t paddingSize = spreadGen(mRandomNumberEngine);
             dataParts.back() = dataParts.back() + mSegmentEndCode + randomGeneGenerator.generate(paddingSize);
 
-            Gene dataLengthPart = toGene(totalDataSize, std::numeric_limits<decltype(totalDataSize)>().max());
+            Gene dataLengthPart = toGene(information.data.size(), std::numeric_limits<int32_t>().max());
 
             output.resize(output.size() + identifierPart.size() + dataLengthPart.size() + totalDataSize + mSegmentEndCode.size() + paddingSize);
 
@@ -128,13 +138,69 @@ namespace dna
     }
 
     template <typename RandomNumberEngine>
+    std::vector<Information> GeneCodec<RandomNumberEngine>::decode(const Gene& toDecode) const
+    {
+        std::vector<Information> result;
+
+        int32_t currentSearchPos = 0;
+        int32_t nextDataPosition = 0;
+
+        while(dataExistsAfter(toDecode, currentSearchPos, nextDataPosition))
+        {
+            int16_t identifierMaxValue = std::numeric_limits<int16_t>().max();
+            uint32_t identifierPartDigitAmount = digitsAmount(identifierMaxValue);
+            Gene identifierPart(toDecode, nextDataPosition, identifierPartDigitAmount);
+
+            uint32_t identifier = fromGene(identifierPart, identifierMaxValue);
+
+            nextDataPosition += identifierPartDigitAmount;
+
+            int32_t dataLengthMaxValue = std::numeric_limits<int32_t>().max();
+            uint32_t dataLengthDigitAmount = digitsAmount(dataLengthMaxValue);
+            Gene dataLengthPart(toDecode, nextDataPosition, dataLengthDigitAmount);
+
+            uint32_t dataLength = fromGene(dataLengthPart, dataLengthMaxValue);
+
+            nextDataPosition += dataLengthDigitAmount;
+
+            std::deque<bool> resultData;
+            uint32_t remainingDataBits = dataLength;
+            while(remainingDataBits != 0)
+            {
+                int32_t batchSize = std::min(32u, remainingDataBits);
+                uint32_t maxValue = intPow(2, batchSize) - 1;
+                uint32_t thisDigitLength = digitsAmount(maxValue);
+
+                Gene dataPart(toDecode, nextDataPosition, thisDigitLength);
+
+                uint32_t data = fromGene(dataPart, maxValue);
+                std::bitset<32> dataBits(data);
+
+                for(int32_t i = 0; i < batchSize; ++i)
+                {
+                    resultData.push_back(dataBits[i]);
+                }
+
+                remainingDataBits -= batchSize;
+                nextDataPosition += thisDigitLength;
+            }
+
+            result.emplace_back(Information{static_cast<int16_t>(identifier), std::move(resultData)});
+
+            currentSearchPos = nextDataPosition;
+        }
+        
+        return result;
+    }
+
+    template <typename RandomNumberEngine>
     Gene GeneCodec<RandomNumberEngine>::toGene(uint32_t data, uint32_t maxValue) const
     {
         DNA_ASSERT(data <= maxValue, "cannot pass bigger integer than maxValue");
         DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
 
         uint32_t base = mAvailableNucleotides.size();
-        uint32_t digitAmount = digitsAmount(maxValue, base);
+        uint32_t digitAmount = digitsAmount(maxValue);
 
         Gene result(digitAmount, mAvailableNucleotides.front());
 
@@ -157,9 +223,71 @@ namespace dna
     }
 
     template <typename RandomNumberEngine>
-    int32_t GeneCodec<RandomNumberEngine>::digitsAmount(uint32_t n, int32_t base) const
+    uint32_t GeneCodec<RandomNumberEngine>::fromGene(const Gene& gene, uint32_t maxValue) const
+    {
+        DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
+
+        uint32_t base = mAvailableNucleotides.size();
+        uint32_t digitAmount = digitsAmount(maxValue);
+
+        uint32_t multiplier = 1;
+        uint32_t result = 0;
+
+        for(int32_t i = 0; i < digitAmount && i < gene.size(); ++i)
+        {
+            char nucleotide = gene[i];
+            result += mNucleotideIndices.at(nucleotide) * multiplier;
+            multiplier *= base;
+        }
+
+        return result;
+    }
+
+    template <typename RandomNumberEngine>
+    int32_t GeneCodec<RandomNumberEngine>::digitsAmount(uint32_t n) const
+    {
+        uint32_t base = mAvailableNucleotides.size();
+        return digitsAmount(n, base);
+    }
+
+    template <typename RandomNumberEngine>
+    int32_t GeneCodec<RandomNumberEngine>::digitsAmount(uint32_t n, uint32_t base) const
     {
         int s = int(std::log10(1.0*n)/std::log10(1.0*base)) + 1;
         return std::pow(base, s) > n ? s : s+1;
+    }
+
+    template <typename RandomNumberEngine>
+    bool GeneCodec<RandomNumberEngine>::dataExistsAfter(const Gene& gene, int32_t startPos, int32_t& nextPosition) const
+    {
+        int32_t nextStart = gene.find(mSegmentStartCode, startPos);
+        int32_t nextEnd = gene.find(mSegmentEndCode, startPos);
+
+        if(nextStart != Gene::npos && nextEnd != Gene::npos)
+        {
+            nextPosition = nextStart + mSegmentStartCode.size();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    template <typename RandomNumberEngine>
+    uint32_t GeneCodec<RandomNumberEngine>::intPow(uint32_t base, uint32_t exp) const
+    {
+        if(exp == 0)
+            return 1;
+
+        uint32_t accumulator = base;
+
+        while(exp > 1)
+        {
+            accumulator *= base;
+            --exp;
+        }
+
+        return accumulator;
     }
 }
