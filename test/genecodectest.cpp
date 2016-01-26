@@ -82,25 +82,11 @@ SCENARIO("A GeneCodec can be used to encode/decode a list of ID's and binary dat
         {
             dna::Gene encoded = geneCodec.encode(data);
 
-            THEN("A gene string with the right symbols and 2 pairs of starts/ends, sufficiently spread out")
+            THEN("A gene string with the right symbols")
             {
+                INFO(encoded);
                 for(auto nucleotide : encoded)
                     CHECK(availableNucleotidesSet.count(nucleotide) != 0);
-
-                size_t firstStartPos = encoded.find(start);
-                size_t secondStartPos = encoded.find(start, firstStartPos + 1);
-                size_t firstEndPos = encoded.find(end);
-                size_t secondEndPos = encoded.find(end, firstEndPos + 1);
-
-                CHECK(firstStartPos != dna::Gene::npos);
-                CHECK(secondStartPos != dna::Gene::npos);
-                CHECK(firstEndPos != dna::Gene::npos);
-                CHECK(secondEndPos != dna::Gene::npos);
-
-                size_t distanceBetweenInformation = secondStartPos - firstEndPos;
-
-                CHECK(distanceBetweenInformation < 100);
-                CHECK(distanceBetweenInformation >= 50);
             }
         }
 
