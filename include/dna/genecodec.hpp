@@ -95,10 +95,14 @@ namespace dna
                 std::bitset<32> batchBits;
                 int32_t batchSize = 0;
 
-                for(int32_t i = 0; i < 32 && informationDataIter != information.data.end(); ++i, ++informationDataIter)
+                for(int32_t i = 0; i < 4 && informationDataIter != information.data.end(); ++i, ++informationDataIter)
                 {
-                    batchBits[i] = *informationDataIter;
-                    ++batchSize;
+                    uint8_t byte = *informationDataIter;
+
+                    batchBits <<= 8;
+                    batchBits |= byte;
+
+                    batchSize += 8;
                 }
 
                 uint32_t maxValue = std::pow(2, batchSize) - 1;
@@ -118,7 +122,7 @@ namespace dna
             int32_t paddingSize = spreadGen(mRandomNumberEngine);
             dataParts.back() = dataParts.back() + mSegmentEndCode + randomGeneGenerator.generate(paddingSize);
 
-            Gene dataLengthPart = toGene(information.data.size(), std::numeric_limits<int32_t>().max());
+            Gene dataLengthPart = toGene(information.data.size() * 8, std::numeric_limits<int32_t>().max());
 
             output.resize(output.size() + identifierPart.size() + dataLengthPart.size() + totalDataSize + mSegmentEndCode.size() + paddingSize);
 
@@ -163,7 +167,7 @@ namespace dna
 
             nextDataPosition += dataLengthDigitAmount;
 
-            std::deque<bool> resultData;
+            std::vector<uint8_t> resultData;
             uint32_t remainingDataBits = dataLength;
             while(remainingDataBits != 0)
             {
@@ -176,9 +180,12 @@ namespace dna
                 uint32_t data = fromGene(dataPart, maxValue);
                 std::bitset<32> dataBits(data);
 
-                for(int32_t i = 0; i < batchSize; ++i)
+                resultData.resize(resultData.size() + batchSize / 8);
+                for(int32_t i = 0; i < batchSize / 8; ++i)
                 {
-                    resultData.push_back(dataBits[i]);
+                    uint8_t entry = dataBits.to_ulong() & 255;
+                    dataBits >>= 8;
+                    resultData[resultData.size() - 1 - i] = entry;
                 }
 
                 remainingDataBits -= batchSize;

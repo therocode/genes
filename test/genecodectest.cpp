@@ -6,11 +6,10 @@ SCENARIO("A GeneCodec can be used to encode/decode a list of ID's and binary dat
 {
     GIVEN("A GeneCodec with a specific spread, available symbols, and a given start/end sequence, and some arbitrary data")
     {
-        std::vector<dna::Nucleotide> availableNucleotides{'K', 'A', 'L', 'E',};
-        //std::vector<dna::Nucleotide> availableNucleotides{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        std::vector<dna::Nucleotide> availableNucleotides{'A', 'C', 'G', 'T',};
         std::unordered_set<dna::Nucleotide> availableNucleotidesSet(availableNucleotides.begin(), availableNucleotides.end());
-        dna::Gene start = "KKAALLEE";
-        dna::Gene end = "EELLAAKK";
+        dna::Gene start = "GATTA";
+        dna::Gene end = "CATTA";
         dna::GeneCodec<> geneCodec(availableNucleotides, start, end, 50, 100);
 
         std::vector<dna::Information> data
@@ -18,61 +17,33 @@ SCENARIO("A GeneCodec can be used to encode/decode a list of ID's and binary dat
             {
                 666,
                 {
-                    true, false, true, false, false, true, true,
+                    23, 43, 1, 43, 0, 5, 45, 2,
                 },
             },
             {
                 10,
                 {
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, false, true,
-                    true, true, false, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, false, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, false, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, false, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                    true, true, true, true, true, true, true,
-                     false, true, false, true, false, false,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 1,
+                    23, 1, 2, 0, 1, 21, 101, 120, 0,
                 },
             },
         };
