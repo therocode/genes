@@ -63,24 +63,6 @@ if(BUILD_TESTS)
     target_link_libraries(tests ${project_name})
 endif(BUILD_TESTS)
 
-#examples
-#if(BUILD_EXAMPLES)
-#    find_package(Featherkit COMPONENTS ui rendering sdl2 structure REQUIRED)
-#    if(${FEATHERKIT_FOUND})
-#        include_directories(${FEATHERKIT_INCLUDE_DIRS})
-#    endif()
-#
-#    set(cells_src "examples/cells/src")
-#    add_executable(cells
-#        ${cells_src}/main.cpp
-#        ${cells_src}/cells.cpp
-#        ${cells_src}/cell.cpp
-#        ${cells_src}/lodepng.cpp
-#        )
-#
-#    target_link_libraries(cells ${project_name} ${FEATHERKIT_LIBRARIES})
-#endif()
-
 #installation
 if(WIN32)
     set(GENES_MISC_DIR .)
