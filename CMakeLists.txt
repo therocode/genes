@@ -29,14 +29,18 @@ project(${project_name} CXX)
 
 #Set source files.
 set(source_files
-    src/genecodec.cpp
+    src/stub.cpp
 )
 
 set(header_files
     include/dna/assert.hpp
+    include/dna/allele.hpp
     include/dna/gene.hpp
     include/dna/genecodec.hpp
+    include/dna/makeprotein.hpp
+    include/dna/protein.hpp
     include/dna/randomgenegenerator.hpp
+    include/dna/chromosome.hpp
 )
 
 include_directories(include)
@@ -51,10 +55,10 @@ target_link_libraries(${project_name})
 if(BUILD_TESTS)
     include_directories(test)
     add_executable(tests "test/main.cpp"
+        "test/alleletest.cpp"
         "test/genecodectest.cpp"
+        "test/proteintest.cpp"
         "test/randomgenegeneratortest.cpp"
-        #"test/cistrontest.cpp"
-        #"test/chromosometest.cpp"
         )
 
     set_property(TARGET tests PROPERTY CXX_STANDARD 14)
