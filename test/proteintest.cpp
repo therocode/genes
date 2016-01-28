@@ -13,7 +13,7 @@ SCENARIO("Proteins can store an ID and a value", "[dna]")
             THEN("the proteins' data can be accessed")
             {
                 CHECK(protein1.id() == 3);
-                CHECK(protein1.value() == 32);
+                CHECK(protein1.value() == 34);
 
                 CHECK(protein2.id() == 4);
                 CHECK(protein2.value() == "hej");

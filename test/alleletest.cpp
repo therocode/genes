@@ -16,12 +16,12 @@ SCENARIO("Alleles can store an ID, a.value(), and a strength and a competetive t
                 CHECK(allele1.id() == 3);
                 CHECK(allele1.value() == 34);
                 CHECK(allele1.strength() == 100);
-                CHECK(allele1.competeType() == dna::CompeteType::Exclusive);
+                CHECK(allele1.competeType == dna::CompeteType::Exclusive);
 
                 CHECK(allele2.id() == 4);
                 CHECK(allele2.value() == "hej");
                 CHECK(allele2.strength() == 230);
-                CHECK(allele2.competeType() == dna::CompeteType::Mix);
+                CHECK(allele2.competeType == dna::CompeteType::Mix);
             }
         }
     }
@@ -63,7 +63,7 @@ SCENARIO("Proteins can be generated from sets of several competing alleles", "[d
 
                 for(const dna::Protein<std::string>& protein : proteins)
                 {
-                    if(protein.value() != "kalle" || protein.value() != "roger")
+                    if(protein.value() != "kalle" && protein.value() != "roger")
                         correctValues = false;
                 }
 
@@ -91,7 +91,7 @@ SCENARIO("Proteins can be generated from sets of several competing alleles", "[d
                 const auto& protein = proteins[0];
 
                 CHECK(protein.id() == 2);
-                CHECK(protein.value() == Approx(2.42853f));
+                CHECK(protein.value() == Approx(2.42857f));
             }
         }
     }

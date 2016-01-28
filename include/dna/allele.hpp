@@ -10,11 +10,11 @@ namespace dna
     {
         public:
             using Type = StorageType;
+            static constexpr CompeteType competeType = tCompeteType;
             Allele(int32_t id, StorageType&& value, int32_t strength);
             int32_t id() const;
             const StorageType& value() const;
             int32_t strength() const;
-            CompeteType competeType() const;
         private:
             int32_t mId;
             StorageType mValue;
@@ -23,6 +23,9 @@ namespace dna
 
     template<typename StorageType, CompeteType tCompeteType>
     using AlleleList = std::vector<Allele<StorageType, tCompeteType>>;
+
+    template <typename StorageType, CompeteType tCompeteType>
+    constexpr CompeteType Allele<StorageType, tCompeteType>::competeType;
 
     template <typename StorageType, CompeteType tCompeteType>
     Allele<StorageType, tCompeteType>::Allele(int32_t id, StorageType&& value, int32_t strength):
@@ -48,11 +51,5 @@ namespace dna
     int32_t Allele<StorageType, tCompeteType>::strength() const
     {
         return mStrength;
-    }
-
-    template <typename StorageType, CompeteType tCompeteType>
-    CompeteType Allele<StorageType, tCompeteType>::competeType() const
-    {
-        return tCompeteType;
     }
 }
