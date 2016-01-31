@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include <deque>
+#include <vector>
 
 namespace dna
 {
@@ -10,8 +10,5 @@ namespace dna
         std::vector<uint8_t> data;
     };
 
-    bool operator==(const Information a, const Information b)
-    {
-        return a.identifier == b.identifier && a.data == b.data;
-    }
+    bool operator==(const Information a, const Information b);
 }

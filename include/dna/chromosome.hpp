@@ -4,6 +4,6 @@
 
 namespace dna
 {
-    template <int32_t tGeneAmount>
+    template <size_t tGeneAmount>
     using Chromosome = std::array<Gene, tGeneAmount>;
 }

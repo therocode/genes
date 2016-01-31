@@ -10,4 +10,9 @@ namespace dna
             template <typename Data>
             void replace(int32_t dataId, int32_t dataIndex, Data data);
     };
+
+    template <typename Data>
+    void GeneManipulator::replace(int32_t dataId, int32_t dataIndex, Data data)
+    {
+    }
 }

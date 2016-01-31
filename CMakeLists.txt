@@ -29,20 +29,23 @@ project(${project_name} CXX)
 
 #Set source files.
 set(source_files
-    src/stub.cpp
+    src/information.cpp
+    src/genemanipulator.cpp
 )
 
 set(header_files
     include/dna/assert.hpp
     include/dna/allele.hpp
-    include/dna/allelechromosomegenerator.hpp
+    include/dna/binarycodec.hpp
+    include/dna/chromosome.hpp
+    include/dna/chromosomegenerator.hpp
     include/dna/gene.hpp
     include/dna/genecodec.hpp
     include/dna/genemanipulator.hpp
     include/dna/makeprotein.hpp
     include/dna/protein.hpp
+    include/dna/proteinextractor.hpp
     include/dna/randomgenegenerator.hpp
-    include/dna/chromosome.hpp
 )
 
 include_directories(include)
@@ -58,7 +61,10 @@ if(BUILD_TESTS)
     include_directories(test)
     add_executable(tests "test/main.cpp"
         "test/alleletest.cpp"
+        "test/binarycodectest.cpp"
+        "test/chromosomegeneratortest.cpp"
         "test/genecodectest.cpp"
+        "test/genemanipulatortest.cpp"
         "test/proteintest.cpp"
         "test/proteinextractortest.cpp"
         "test/randomgenegeneratortest.cpp"
