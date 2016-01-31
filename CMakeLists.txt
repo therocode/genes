@@ -35,8 +35,10 @@ set(source_files
 set(header_files
     include/dna/assert.hpp
     include/dna/allele.hpp
+    include/dna/allelechromosomegenerator.hpp
     include/dna/gene.hpp
     include/dna/genecodec.hpp
+    include/dna/genemanipulator.hpp
     include/dna/makeprotein.hpp
     include/dna/protein.hpp
     include/dna/randomgenegenerator.hpp
@@ -58,6 +60,7 @@ if(BUILD_TESTS)
         "test/alleletest.cpp"
         "test/genecodectest.cpp"
         "test/proteintest.cpp"
+        "test/proteinextractortest.cpp"
         "test/randomgenegeneratortest.cpp"
         )
 

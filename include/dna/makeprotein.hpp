@@ -39,7 +39,7 @@ namespace dna
         DNA_ASSERT(!strongestAlleles.empty(), "should not be empty");
         for(auto winnerAllele : strongestAlleles)
         {
-            result.emplace_back(Protein<typename AlleleType::Type>(winnerAllele->id(), winnerAllele->value()));
+            result.emplace_back(Protein<typename AlleleType::Type>(winnerAllele->value()));
         }
 
         return result;
@@ -71,7 +71,7 @@ namespace dna
             mixedValue += allele.value() * (static_cast<double>(allele.strength() / static_cast<double>(totalStrength)));
         }
 
-        result.emplace_back(Protein<typename AlleleType::Type>(firstAllele.id(), std::move(mixedValue)));
+        result.emplace_back(Protein<typename AlleleType::Type>(std::move(mixedValue)));
 
         return result;
     }

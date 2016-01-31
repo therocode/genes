@@ -2,23 +2,21 @@
 #include <dna/allele.hpp>
 #include <dna/makeprotein.hpp>
 
-SCENARIO("Alleles can store an ID, a.value(), and a strength and a competetive type", "[dna]")
+SCENARIO("Alleles can store a.value(), and a strength and a competetive type", "[dna]")
 {
     GIVEN("Alleles with different data")
     {
-        dna::Allele<int, dna::CompeteType::Exclusive> allele1(3, 34, 100);
-        dna::Allele<std::string, dna::CompeteType::Mix> allele2(4, "hej", 230);
+        dna::Allele<int, dna::CompeteType::Exclusive> allele1(34, 100);
+        dna::Allele<std::string, dna::CompeteType::Mix> allele2("hej", 230);
 
         WHEN("")
         {
             THEN("the alleles' data can be accessed")
             {
-                CHECK(allele1.id() == 3);
                 CHECK(allele1.value() == 34);
                 CHECK(allele1.strength() == 100);
                 CHECK(allele1.competeType == dna::CompeteType::Exclusive);
 
-                CHECK(allele2.id() == 4);
                 CHECK(allele2.value() == "hej");
                 CHECK(allele2.strength() == 230);
                 CHECK(allele2.competeType == dna::CompeteType::Mix);
@@ -32,10 +30,10 @@ SCENARIO("Proteins can be generated from sets of several competing alleles", "[d
     GIVEN("Same-type alleles that compete through exclusiveness")
     {
         using NameAllele = dna::Allele<std::string, dna::CompeteType::Exclusive>;
-        NameAllele allele1(4, "hej", 10);
-        NameAllele allele2(4, "hoj", 70);
-        NameAllele allele3(4, "kalle", 100);
-        NameAllele allele4(4, "roger", 100);
+        NameAllele allele1("hej", 10);
+        NameAllele allele2("hoj", 70);
+        NameAllele allele3("kalle", 100);
+        NameAllele allele4("roger", 100);
 
         WHEN("proteins are generated from a set with differing strengths")
         {
@@ -46,7 +44,6 @@ SCENARIO("Proteins can be generated from sets of several competing alleles", "[d
                 REQUIRE(proteins.size() == 1);
 
                 const dna::Protein<std::string>& protein = proteins[0];
-                CHECK(protein.id() == 4);
                 CHECK(protein.value() == allele3.value());
             }
         }
@@ -76,9 +73,9 @@ SCENARIO("Proteins can be generated from sets of several competing alleles", "[d
     GIVEN("Same-type alleles that compete through mixing")
     {
         using FloatMixAllele = dna::Allele<float, dna::CompeteType::Mix>;
-        FloatMixAllele allele1(2, 1.0f, 20);
-        FloatMixAllele allele2(2, 2.0f, 80);
-        FloatMixAllele allele3(2, 4.0f, 40);
+        FloatMixAllele allele1(1.0f, 20);
+        FloatMixAllele allele2(2.0f, 80);
+        FloatMixAllele allele3(4.0f, 40);
 
         WHEN("proteins are generated from a set")
         {
@@ -90,7 +87,6 @@ SCENARIO("Proteins can be generated from sets of several competing alleles", "[d
 
                 const auto& protein = proteins[0];
 
-                CHECK(protein.id() == 2);
                 CHECK(protein.value() == Approx(2.42857f));
             }
         }

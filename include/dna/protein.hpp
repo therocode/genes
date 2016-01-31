@@ -7,11 +7,9 @@ namespace dna
     class Protein
     {
         public:
-            Protein(int32_t id, Type value);
-            int32_t id() const;
+            Protein(Type value);
             const Type& value() const;
         private:
-            int32_t mId;
             Type mValue;
     };
 
@@ -19,16 +17,9 @@ namespace dna
     using ProteinList = std::vector<Protein<Type>>;
 
     template <typename Type>
-    Protein<Type>::Protein(int32_t id, Type value):
-        mId(id),
+    Protein<Type>::Protein(Type value):
         mValue(std::move(value))
     {
-    }
-
-    template <typename Type>
-    int32_t Protein<Type>::id() const
-    {
-        return mId;
     }
 
     template <typename Type>
