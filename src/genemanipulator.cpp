@@ -2,7 +2,8 @@
 
 namespace dna
 {
-    GeneManipulator::GeneManipulator(const Gene& gene)
+    GeneManipulator::GeneManipulator(Gene& gene):
+        mGene(gene)
     {
     }
 }

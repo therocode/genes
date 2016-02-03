@@ -31,7 +31,7 @@ SCENARIO("Given a gene string with data, the gene manipulator class is capable o
 
             THEN("the string contains the updated data")
             {
-                dna::GeneCodec<> geneCodec({'A', 'T', 'C', 'G'}, "GATTA", "CATTA", 50, 200);
+                dna::GeneCodec<> geneCodec({{'A', 'T', 'C', 'G'}, "GATTA", "CATTA", 50, 200});
                 auto data = geneCodec.decode(gene);
 
                 REQUIRE(data.size() == 3);

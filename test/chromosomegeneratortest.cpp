@@ -22,7 +22,7 @@ SCENARIO("A ChromosomeGenerator can generate a chromosome with alleles placed in
             {
                 REQUIRE(chromosome.size() == 2);
 
-                dna::GeneCodec<> codec({'A', 'T', 'C', 'G'}, "GATTA", "CATTA", 50, 200);
+                dna::GeneCodec<> codec({{'A', 'T', 'C', 'G'}, "GATTA", "CATTA", 50, 200});
 
                 for(const auto& dataList : {codec.decode(chromosome[0]), codec.decode(chromosome[1])})
                 {

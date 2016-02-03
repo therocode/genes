@@ -8,7 +8,7 @@ SCENARIO("RandomGeneGenerator can produce genes with randomized content", "[dna]
         std::vector<dna::Nucleotide> availableNucleotides{'A', 'C', 'G', 'T'};
         std::unordered_set<dna::Nucleotide> availableNucleotidesSet(availableNucleotides.begin(), availableNucleotides.end());
 
-        dna::RandomGeneGenerator<> generator(availableNucleotides, {}, 0);
+        dna::RandomGeneGenerator<> generator({availableNucleotides}, {}, 0);
 
         WHEN("A random gene of a certain length is requested")
         {
@@ -31,7 +31,7 @@ SCENARIO("RandomGeneGenerator can produce genes with randomized content", "[dna]
         std::unordered_set<dna::Nucleotide> availableNucleotidesSet(availableNucleotides.begin(), availableNucleotides.end());
         std::unordered_set<dna::Gene> illegalSequences{"GATCA", "CATA", "TATA", "GATTACA"};
 
-        dna::RandomGeneGenerator<> generator(availableNucleotides, illegalSequences, 0);
+        dna::RandomGeneGenerator<> generator({availableNucleotides}, illegalSequences, 0);
 
         WHEN("A random gene of a certain length is requested")
         {

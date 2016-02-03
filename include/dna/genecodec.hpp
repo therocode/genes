@@ -1,12 +1,12 @@
 #pragma once
 #include <cstdint>
 #include <dna/gene.hpp>
-#include <unordered_set>
 #include <unordered_map>
 #include <bitset>
 #include <vector>
 #include <dna/information.hpp>
 #include <dna/randomgenegenerator.hpp>
+#include <dna/geneconfiguration.hpp>
 #include <dna/assert.hpp>
 #include <iostream>
 #include <limits>
@@ -18,7 +18,7 @@ namespace dna
     class GeneCodec
     {
         public:
-            GeneCodec(const std::vector<char>& availableNucleotides, const Gene& segmentStartCode, const Gene& segmentEndCode, int32_t minSpread, int32_t maxSpread, int32_t seed = std::random_device()());
+            GeneCodec(GeneConfiguration configuration, int32_t seed = std::random_device()());
             Gene encode(const std::vector<Information>& informationContainer) const;
             void encode(const std::vector<Information>& informationContainer, Gene& output) const;
             std::vector<Information> decode(const Gene& toDecode) const;
@@ -29,29 +29,21 @@ namespace dna
             int32_t digitsAmount(uint32_t n, uint32_t base) const;
             bool dataExistsAfter(const Gene& gene, int32_t startPos, int32_t& nextPosition) const;
             uint32_t intPow(uint32_t base, uint32_t exp) const;
-            std::vector<char> mAvailableNucleotides;
+            GeneConfiguration mConfiguration;
             std::unordered_map<char, int32_t> mNucleotideIndices;
             mutable RandomNumberEngine mRandomNumberEngine;
-            Gene mSegmentStartCode;
-            Gene mSegmentEndCode;
-            int32_t mMinSpread;
-            int32_t mMaxSpread;
             char mZeroNucleotide;
     };
 
     template <typename RandomNumberEngine>
-    GeneCodec<RandomNumberEngine>::GeneCodec(const std::vector<char>& availableNucleotides, const Gene& segmentStartCode, const Gene& segmentEndCode, int32_t minSpread, int32_t maxSpread, int32_t seed):
-        mAvailableNucleotides(availableNucleotides),
+    GeneCodec<RandomNumberEngine>::GeneCodec(GeneConfiguration configuration, int32_t seed):
+        mConfiguration(std::move(configuration)),
         mRandomNumberEngine(seed),
-        mSegmentStartCode(segmentStartCode),
-        mSegmentEndCode(segmentEndCode),
-        mMinSpread(minSpread),
-        mMaxSpread(maxSpread),
-        mZeroNucleotide(mAvailableNucleotides.front())
+        mZeroNucleotide(mConfiguration.nucleotides.front())
     {
         int32_t i = 0;
 
-        for(char nucleotide : mAvailableNucleotides)
+        for(char nucleotide : mConfiguration.nucleotides)
         {
             mNucleotideIndices.emplace(nucleotide, i);
             ++i;
@@ -72,9 +64,9 @@ namespace dna
         if(informationContainer.empty())
             return;
 
-        std::uniform_int_distribution<> spreadGen(mMinSpread, mMaxSpread);
+        std::uniform_int_distribution<> spreadGen(mConfiguration.minSpread, mConfiguration.maxSpread);
 
-        RandomGeneGenerator<RandomNumberEngine> randomGeneGenerator(mAvailableNucleotides, {mSegmentStartCode, mSegmentEndCode}, mRandomNumberEngine());
+        RandomGeneGenerator<RandomNumberEngine> randomGeneGenerator(mConfiguration, {mConfiguration.segmentStartCode, mConfiguration.segmentEndCode}, mRandomNumberEngine());
         output = randomGeneGenerator.generate(spreadGen(mRandomNumberEngine));
         auto nextOutputIndex = output.size();
 
@@ -112,7 +104,7 @@ namespace dna
             size_t identifierPartOldSize = identifierPart.size();
 
             //apply start and end markers
-            identifierPart = mSegmentStartCode + identifierPart;
+            identifierPart = mConfiguration.segmentStartCode + identifierPart;
 
             //sum sizes
             int32_t totalDataSize = 0;
@@ -120,11 +112,11 @@ namespace dna
                 totalDataSize += dataPart.size();
 
             int32_t paddingSize = spreadGen(mRandomNumberEngine);
-            dataParts.back() = dataParts.back() + mSegmentEndCode + randomGeneGenerator.generate(paddingSize);
+            dataParts.back() = dataParts.back() + mConfiguration.segmentEndCode + randomGeneGenerator.generate(paddingSize);
 
             Gene dataLengthPart = toGene(information.data.size() * 8, std::numeric_limits<int32_t>().max());
 
-            output.resize(output.size() + identifierPart.size() + dataLengthPart.size() + totalDataSize + mSegmentEndCode.size() + paddingSize);
+            output.resize(output.size() + identifierPart.size() + dataLengthPart.size() + totalDataSize + mConfiguration.segmentEndCode.size() + paddingSize);
 
             std::copy(identifierPart.begin(), identifierPart.end(), output.begin() + nextOutputIndex);
             nextOutputIndex += identifierPart.end() - identifierPart.begin();
@@ -206,10 +198,10 @@ namespace dna
         DNA_ASSERT(data <= maxValue, "cannot pass bigger integer than maxValue");
         DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
 
-        uint32_t base = mAvailableNucleotides.size();
+        uint32_t base = mConfiguration.nucleotides.size();
         uint32_t digitAmount = digitsAmount(maxValue);
 
-        Gene result(digitAmount, mAvailableNucleotides.front());
+        Gene result(digitAmount, mConfiguration.nucleotides.front());
 
         uint32_t writeIndex = 0;
 
@@ -221,7 +213,7 @@ namespace dna
             left = thisLeft / base;
             uint32_t thisValue = thisLeft % base; //smart compilers just get the remainder STD DIV!!!!!!!!!!!!!!!!!!!!
 
-            result[writeIndex] = mAvailableNucleotides[thisValue];
+            result[writeIndex] = mConfiguration.nucleotides[thisValue];
 
             ++writeIndex;
         }
@@ -234,7 +226,7 @@ namespace dna
     {
         DNA_ASSERT(maxValue > 0, "maxValue cannot be zero");
 
-        uint32_t base = mAvailableNucleotides.size();
+        uint32_t base = mConfiguration.nucleotides.size();
         uint32_t digitAmount = digitsAmount(maxValue);
 
         uint32_t multiplier = 1;
@@ -253,7 +245,7 @@ namespace dna
     template <typename RandomNumberEngine>
     int32_t GeneCodec<RandomNumberEngine>::digitsAmount(uint32_t n) const
     {
-        uint32_t base = mAvailableNucleotides.size();
+        uint32_t base = mConfiguration.nucleotides.size();
         return digitsAmount(n, base);
     }
 
@@ -267,12 +259,12 @@ namespace dna
     template <typename RandomNumberEngine>
     bool GeneCodec<RandomNumberEngine>::dataExistsAfter(const Gene& gene, int32_t startPos, int32_t& nextPosition) const
     {
-        int32_t nextStart = gene.find(mSegmentStartCode, startPos);
-        int32_t nextEnd = gene.find(mSegmentEndCode, startPos);
+        int32_t nextStart = gene.find(mConfiguration.segmentStartCode, startPos);
+        int32_t nextEnd = gene.find(mConfiguration.segmentEndCode, startPos);
 
         if(nextStart != Gene::npos && nextEnd != Gene::npos)
         {
-            nextPosition = nextStart + mSegmentStartCode.size();
+            nextPosition = nextStart + mConfiguration.segmentStartCode.size();
             return true;
         }
         else

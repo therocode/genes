@@ -10,7 +10,7 @@ SCENARIO("A GeneCodec can be used to encode/decode a list of ID's and binary dat
         std::unordered_set<dna::Nucleotide> availableNucleotidesSet(availableNucleotides.begin(), availableNucleotides.end());
         dna::Gene start = "GATTA";
         dna::Gene end = "CATTA";
-        dna::GeneCodec<> geneCodec(availableNucleotides, start, end, 50, 100);
+        dna::GeneCodec<> geneCodec({availableNucleotides, start, end, 50, 100});
 
         std::vector<dna::Information> data
         {

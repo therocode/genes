@@ -29,7 +29,6 @@ project(${project_name} CXX)
 
 #Set source files.
 set(source_files
-    src/cerealbackend.cpp
     src/information.cpp
     src/genemanipulator.cpp
 )
@@ -42,6 +41,7 @@ set(header_files
     include/dna/chromosome.hpp
     include/dna/chromosomegenerator.hpp
     include/dna/gene.hpp
+    include/dna/geneconfiguration.hpp
     include/dna/genecodec.hpp
     include/dna/genemanipulator.hpp
     include/dna/makeprotein.hpp

@@ -1,5 +1,6 @@
 #pragma once
 #include <dna/gene.hpp>
+#include <dna/geneconfiguration.hpp>
 #include <unordered_set>
 #include <vector>
 #include <random>
@@ -12,20 +13,20 @@ namespace dna
         class RandomGeneGenerator
         {
             public:
-                RandomGeneGenerator(std::vector<Nucleotide> avaliableNucleotides, std::unordered_set<Gene> illegalSequences = {}, int32_t seed = std::random_device()());
+                RandomGeneGenerator(GeneConfiguration configuration, std::unordered_set<Gene> illegalSequences = {}, int32_t seed = std::random_device()());
                 Gene generate(int32_t length) const;
             private:
                 size_t findFirstIllegal(const Gene& gene, size_t startSearch) const;
                 bool containsIllegal(const Gene& gene, size_t startSearch, std::pair<size_t, size_t>& illegalStartAndSize) const;
                 mutable RandomNumberEngine mRandomNumberEngine;
-                std::vector<Nucleotide> mAvailableNucleotides;
+                GeneConfiguration mConfiguration;
                 std::vector<Gene> mIllegalSequences;
                 int64_t mBiggestIllegalSize;
         };
 
     template <typename RandomNumberEngine>
-        RandomGeneGenerator<RandomNumberEngine>::RandomGeneGenerator(std::vector<Nucleotide> avaliableNucleotides, std::unordered_set<Gene> illegalSequences, int32_t seed):
-            mAvailableNucleotides(std::move(avaliableNucleotides)),
+        RandomGeneGenerator<RandomNumberEngine>::RandomGeneGenerator(GeneConfiguration configuration, std::unordered_set<Gene> illegalSequences, int32_t seed):
+            mConfiguration(std::move(configuration)),
             mIllegalSequences(illegalSequences.begin(), illegalSequences.end()),
             mRandomNumberEngine(seed),
             mBiggestIllegalSize(0)
@@ -37,12 +38,12 @@ namespace dna
     template <typename RandomNumberEngine>
     Gene RandomGeneGenerator<RandomNumberEngine>::generate(int32_t length) const
     {
-        std::uniform_int_distribution<size_t> range(0, mAvailableNucleotides.size() - 1);
+        std::uniform_int_distribution<size_t> range(0, mConfiguration.nucleotides.size() - 1);
 
         Gene result(length, ' ');
 
         for(int32_t i = 0; i < length; ++i)
-            result[i] = mAvailableNucleotides[range(mRandomNumberEngine)];
+            result[i] = mConfiguration.nucleotides[range(mRandomNumberEngine)];
 
         std::pair<size_t, size_t> illegalStartAndSize;
         int64_t safePos = 0;
@@ -52,7 +53,7 @@ namespace dna
             int32_t rewriteStart = illegalStartAndSize.first;
             for(int32_t i = rewriteStart; i < rewriteStart + illegalStartAndSize.second; ++i)
             {
-                result[i] = mAvailableNucleotides[range(mRandomNumberEngine)];
+                result[i] = mConfiguration.nucleotides[range(mRandomNumberEngine)];
             }
 
             safePos = static_cast<int64_t>(rewriteStart) - mBiggestIllegalSize;
