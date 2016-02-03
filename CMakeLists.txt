@@ -29,6 +29,7 @@ project(${project_name} CXX)
 
 #Set source files.
 set(source_files
+    src/cerealbackend.cpp
     src/information.cpp
     src/genemanipulator.cpp
 )
@@ -37,6 +38,7 @@ set(header_files
     include/dna/assert.hpp
     include/dna/allele.hpp
     include/dna/binarycodec.hpp
+    include/dna/cerealbackend.hpp
     include/dna/chromosome.hpp
     include/dna/chromosomegenerator.hpp
     include/dna/gene.hpp
@@ -69,6 +71,12 @@ if(BUILD_TESTS)
         "test/proteinextractortest.cpp"
         "test/randomgenegeneratortest.cpp"
         )
+
+    find_package(Cereal REQUIRED)
+
+    if(${CEREAL_FOUND})
+        include_directories(${CEREAL_INCLUDE_DIRS})
+    endif()
 
     set_property(TARGET tests PROPERTY CXX_STANDARD 14)
     set_property(TARGET tests PROPERTY CXX_STANDARD_REQUIRED ON)

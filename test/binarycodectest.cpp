@@ -1,5 +1,8 @@
 #include "catch.hpp"
 #include <dna/binarycodec.hpp>
+#include <cereal/types/string.hpp>
+#include <cereal/types/unordered_map.hpp>
+#include <cereal/types/vector.hpp>
 #include <dna/cerealbackend.hpp>
 #include <unordered_map>
 

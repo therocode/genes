@@ -2,6 +2,7 @@
 #include <dna/allele.hpp>
 #include <dna/chromosomegenerator.hpp>
 #include <dna/genecodec.hpp>
+#include <cereal/types/string.hpp>
 #include <dna/binarycodec.hpp>
 #include <dna/cerealbackend.hpp>
 #include <dna/genemanipulator.hpp>
