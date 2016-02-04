@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include <dna/allele.hpp>
-#include <dna/makeprotein.hpp>
+#include <dna/makeproteins.hpp>
 
 SCENARIO("Alleles can store a.value(), and a strength and a competetive type", "[dna]")
 {

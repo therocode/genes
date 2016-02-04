@@ -44,7 +44,7 @@ set(header_files
     include/dna/geneconfiguration.hpp
     include/dna/genecodec.hpp
     include/dna/genemanipulator.hpp
-    include/dna/makeprotein.hpp
+    include/dna/makeproteins.hpp
     include/dna/protein.hpp
     include/dna/proteinextractor.hpp
     include/dna/randomgenegenerator.hpp
