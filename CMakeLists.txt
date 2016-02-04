@@ -30,7 +30,6 @@ project(${project_name} CXX)
 #Set source files.
 set(source_files
     src/information.cpp
-    src/genemanipulator.cpp
 )
 
 set(header_files
@@ -38,6 +37,7 @@ set(header_files
     include/dna/allele.hpp
     include/dna/binarycodec.hpp
     include/dna/cerealbackend.hpp
+    include/dna/cerealalleleserializer.hpp
     include/dna/chromosome.hpp
     include/dna/chromosomegenerator.hpp
     include/dna/gene.hpp

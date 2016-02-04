@@ -1,21 +1,26 @@
 #include "catch.hpp"
 #include <dna/allele.hpp>
 #include <dna/chromosomegenerator.hpp>
+#include <dna/cerealbackend.hpp>
 #include <dna/genemanipulator.hpp>
 #include <dna/proteinextractor.hpp>
+#include <dna/cerealalleleserializer.hpp>
+#include <cereal/types/string.hpp>
+
+const dna::GeneConfiguration config{{'A', 'T', 'C', 'G'}, "GATTA", "CATTA", 50, 200};
 
 SCENARIO("Given a chromosome with data, a protein extractor can extract proteins of the data, merging alleles as needed", "[dna]")
 {
     GIVEN("A chromosome with some alleles in it")
     {
-        dna::ChromosomeGenerator<2> generator;
+        dna::ChromosomeGenerator<2, dna::CerealBackend> generator(config);
 
         auto chromosome = generator.generate(
             std::make_pair(0, dna::Allele<std::string, dna::CompeteType::Exclusive>("Kalle", 100)),
             std::make_pair(1, dna::Allele<int16_t, dna::CompeteType::Mix>(17, 70))
         );
 
-        dna::GeneManipulator manipulator(chromosome[0]);
+        dna::GeneManipulator<dna::CerealBackend> manipulator(config, chromosome[0]);
 
         manipulator.replace(0, 0, dna::Allele<std::string, dna::CompeteType::Exclusive>("Nisse", 80));
         manipulator.replace(1, 0, dna::Allele<int16_t, dna::CompeteType::Mix>(42, 30));

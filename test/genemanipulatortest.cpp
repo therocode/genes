@@ -7,11 +7,13 @@
 #include <dna/cerealbackend.hpp>
 #include <dna/genemanipulator.hpp>
 
+const dna::GeneConfiguration config{{'A', 'T', 'C', 'G'}, "GATTA", "CATTA", 50, 200};
+
 SCENARIO("Given a gene string with data, the gene manipulator class is capable of replacing data of specific sections", "[dna]")
 {
     GIVEN("A gene string with data and a gene manipulator")
     {
-        dna::ChromosomeGenerator<2> generator;
+        dna::ChromosomeGenerator<2, dna::CerealBackend> generator(config);
 
         auto chromosome = generator.generate(
             std::make_pair(0, std::string("Kalle")),
@@ -21,7 +23,7 @@ SCENARIO("Given a gene string with data, the gene manipulator class is capable o
 
         dna::Gene gene = chromosome[0];
 
-        dna::GeneManipulator manipulator(chromosome[0]);
+        dna::GeneManipulator<dna::CerealBackend> manipulator(config, gene);
 
         WHEN("The manipulator is used to manipulate data in the string")
         {
@@ -31,7 +33,7 @@ SCENARIO("Given a gene string with data, the gene manipulator class is capable o
 
             THEN("the string contains the updated data")
             {
-                dna::GeneCodec<> geneCodec({{'A', 'T', 'C', 'G'}, "GATTA", "CATTA", 50, 200});
+                dna::GeneCodec<> geneCodec(config);
                 auto data = geneCodec.decode(gene);
 
                 REQUIRE(data.size() == 3);

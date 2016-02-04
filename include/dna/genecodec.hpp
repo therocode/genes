@@ -22,9 +22,9 @@ namespace dna
             Gene encode(const std::vector<Information>& informationContainer) const;
             void encode(const std::vector<Information>& informationContainer, Gene& output) const;
             std::vector<Information> decode(const Gene& toDecode) const;
-        private:
             Gene toGene(uint32_t data, uint32_t maxValue) const;
             uint32_t fromGene(const Gene& gene, uint32_t maxValue) const;
+        private:
             int32_t digitsAmount(uint32_t n) const;
             int32_t digitsAmount(uint32_t n, uint32_t base) const;
             bool dataExistsAfter(const Gene& gene, int32_t startPos, int32_t& nextPosition) const;

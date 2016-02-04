@@ -11,7 +11,8 @@ namespace dna
         public:
             using Type = StorageType;
             static constexpr CompeteType competeType = tCompeteType;
-            Allele(StorageType&& value, int32_t strength);
+            Allele() = default;
+            Allele(StorageType value, int32_t strength);
             const StorageType& value() const;
             int32_t strength() const;
         private:
@@ -26,8 +27,8 @@ namespace dna
     constexpr CompeteType Allele<StorageType, tCompeteType>::competeType;
 
     template <typename StorageType, CompeteType tCompeteType>
-    Allele<StorageType, tCompeteType>::Allele(StorageType&& value, int32_t strength):
-        mValue(std::forward<StorageType>(value)),
+    Allele<StorageType, tCompeteType>::Allele(StorageType value, int32_t strength):
+        mValue(std::move(value)),
         mStrength(strength)
     {
     }
