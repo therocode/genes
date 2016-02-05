@@ -47,6 +47,7 @@ set(header_files
     include/dna/makeproteins.hpp
     include/dna/protein.hpp
     include/dna/proteinextractor.hpp
+    include/dna/recombinator.hpp
     include/dna/randomgenegenerator.hpp
 )
 
@@ -70,6 +71,7 @@ if(BUILD_TESTS)
         "test/proteintest.cpp"
         "test/proteinextractortest.cpp"
         "test/randomgenegeneratortest.cpp"
+        "test/recombinatortest.cpp"
         )
 
     find_package(Cereal REQUIRED)
