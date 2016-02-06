@@ -1,6 +1,8 @@
 #pragma once
 #include <dna/protein.hpp>
 #include <dna/chromosome.hpp>
+#include <dna/genecodec.hpp>
+#include <dna/binarycodec.hpp>
 #include <dna/makeproteins.hpp>
 
 namespace dna
